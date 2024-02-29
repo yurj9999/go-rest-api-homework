@@ -44,7 +44,6 @@ var tasks = map[string]Task{
 // Ниже напишите обработчики для каждого эндпоинта
 func getTasks(w http.ResponseWriter, r *http.Request) {
 	resp, err := json.Marshal(tasks)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -59,16 +58,14 @@ func getTask(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	task, ok := tasks[id]
-
 	if !ok {
 		http.Error(w, "Задача не найдена", http.StatusNoContent)
 		return
 	}
 
 	resp, err := json.Marshal(task)
-
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -82,7 +79,6 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
 
 	_, err := buf.ReadFrom(r.Body)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -101,14 +97,6 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 
 func deleteTask(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-
-	_, ok := tasks[id]
-
-	if !ok {
-		http.Error(w, "Задача не найдена", http.StatusNotFound)
-		return
-	}
-
 	delete(tasks, id)
 
 	w.Header().Set("Content-Type", "application/json")
